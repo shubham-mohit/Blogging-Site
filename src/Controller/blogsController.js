@@ -111,4 +111,55 @@ const blogDelete = async (req, res) => {
     }
 };
 
-module.exports = { blogs, getBlogs, update, blogDelete }
+
+
+
+
+const deleteBlog = async (req, res) => {
+    try {
+        let data = req.query
+        let { category, authorId,tags, subcategory, isPublished } = data
+        if (!data) return res.status(400).send({ message: "mandotory field is required" })
+
+
+
+        let blogdoc = await blogsModel.find({ $or: [{ category: category }, { authorId: authorId }, { subcategory: subcategory }, { isPublished: isPublished }] })
+
+
+        if (!blogdoc.length > 0) {
+            return res.status(404).send({ error: "Blog document not found" })
+        }
+        // let deleteBlog = await blogsModel.updateMany({ $or: [{ category: category }, { authorId: authorId },{ ispublished: isPublished }] }, { $set: { isDeleted: true } })
+
+        const deleteBlog = {
+
+        }
+
+        if (category) {
+            deleteBlog.category = category
+        }
+        if (authorId) {
+            deleteBlog.authorId = authorId
+        }
+        if (isPublished) {
+            deleteBlog.isPublished = isPublished
+        }
+        if (subcategory) {
+            deleteBlog.subcategory = subcategory
+        }
+
+        if(tags){
+            deleteBlog.tags = tags
+        }
+
+let blogDelete = await blogsModel.updateMany(deleteBlog,{$set:{isDeleted:true}});
+console.log(blogDelete);
+        res.status(201).send({ status: true, msg: "deleted successfully" })
+    } catch (error) {
+        return res.status(500).send({ error: error.message });
+    }
+
+
+}
+
+module.exports = { blogs, getBlogs, update, blogDelete, deleteBlog }
