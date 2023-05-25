@@ -1,0 +1,16 @@
+{
+  "name": "project1_blogging",
+  "version": "1.0.0",
+  "description": "\"Blogging_site\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "\"Group_8\"",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.2.1",
+    "nodemon": "^2.0.22"
+  }
+}
