@@ -59,5 +59,27 @@ example of a query url: blogs?filtername=filtervalue&f2=fv2*/
             res.status(500).send({status: false, message : error.message})
         }
     }
-    
-module.exports = {blogs, getBlogs}
+  const update = async function(req,res){
+    let data = req.body
+    try{
+        if(!ObjectId.isValid(req.params.blogId))
+         { return res.status(400).send("Id not found")}
+        else{
+            let checkout = await blogsModel.findById(req.params.blogId)
+            if(!checkout) 
+            {return res.status(400).send("Id not match")}
+            else{
+                let update = await blogsModel.findByIdAndUpdate( req.params.blogId,data,{new:true})
+                res.status(201).send({msg: "update successfully", status:true , data: update})
+            }
+        }
+    }
+    catch(error){
+        res.send(error.message)
+    }
+}
+  
+
+
+
+module.exports = {blogs, getBlogs,update}
