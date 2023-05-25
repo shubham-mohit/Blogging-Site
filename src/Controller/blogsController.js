@@ -83,7 +83,7 @@ const update = async function (req, res) {
             if (!blog) { return res.status(400).send("Id not match") }
             else {
                 let updateBlog = await blogsModel.findByIdAndUpdate(req.params.blogId, data, { new: true })
-                res.status(200).send({ status: true, msg: "update successfully", data: update })
+                res.status(200).send({ status: true, msg: "update successfully", data: updateBlog })
             }
         }
     }
