@@ -5,7 +5,7 @@ const authors = async (req, res) => {
     try {
         const { fname, lname, email, password, title } = req.body
         if (!fname || !lname || !email || !password || !title) return res.status(400).send({ status: false, message: "Please provide all required fields" })
-        else if(!["Mr", "Miss", "Mrs"] .includes(title)) return res.status(400).send({ status: false, message: "Please provide valid title" })  
+        else if(!["Mr", "Miss", "Mrs"].includes(title)) return res.status(400).send({ status: false, message: "Please provide valid title" })  
         else if (!validator.isStrongPassword(password)) return res.status(400).send({ status: false, message: "please enter a strong password" })
         else {
             if (!validator.isEmail(email)) return res.status(400).send({ status: false, message: "Please provide a valid email" })
