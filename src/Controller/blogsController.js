@@ -59,6 +59,13 @@ example of a query url: blogs?filtername=filtervalue&f2=fv2*/
             res.status(500).send({status: false, message : error.message})
         }
     }
+
+
+
+
+
+
+
   const update = async function(req,res){
     let data = req.body
     try{
@@ -80,6 +87,24 @@ example of a query url: blogs?filtername=filtervalue&f2=fv2*/
 }
   
 
+const blogdelete=async (req, res) => {
+    const blogId = req.params.blogId;
+  
+    try {
+      const blog = await blogsModel.findOneAndUpdate(
+        { _id: blogId, deletedAt: null },
+        { $set :{deletedAt:  Date.now()} },
+        {new:true}
+      );
+  
+      if (blog) {
+        return res.status(200).send({status:true, message:""});
+      } else {
+        return res.status(404).send({ error: 'Blog not found' });
+      }
+    } catch (err) {
+      return res.status(500).send({ error: err.message});
+    }
+  };
 
-
-module.exports = {blogs, getBlogs,update}
+module.exports = {blogs, getBlogs,update,blogdelete}
