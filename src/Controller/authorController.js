@@ -8,7 +8,9 @@ const authors = async (req, res) => {
         else if(!["Mr", "Miss", "Mrs"].includes(title)) return res.status(400).send({ status: false, message: "Please provide valid title" })  
         else if (!validator.isStrongPassword(password)) return res.status(400).send({ status: false, message: "please enter a strong password" })
         else {
+            const emailCheck = await authorModel.findOne({ email: email })
             if (!validator.isEmail(email)) return res.status(400).send({ status: false, message: "Please provide a valid email" })
+            else if(emailCheck) return res.status(400).send({ status: false, message: "this email is already existing" })
             const userAuthor = await authorModel.create(req.body)
             res.status(201).send({ status: true, data: userAuthor })
         }
