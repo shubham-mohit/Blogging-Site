@@ -1,6 +1,7 @@
 const blogsModel = require('../Models/blogsModel');
 const authorModel = require('../Models/authorModel')
 const ObjectId = require('mongoose').Types.ObjectId;
+
 const blogs = async (req, res) => {
     const { title, body, authorId, category } = req.body
     try {
@@ -32,8 +33,12 @@ example of a query url: blogs?filtername=filtervalue&f2=fv2*/
 const getBlogs = async (req, res) => {
     try {
         const { authorId, category, tag, subcategory } = req.query
-        const data = await blogsModel.find({ isDeleted: false })
-        if (!authorId && !category && !subcategory && !tag) return res.status(200).send({ status: true,message : "all blogs" ,data: data })
+        const data = await blogsModel.find({ isDeleted: false, authorId: req.authorId })
+        if (authorId) {
+
+            if (req.authorId != authorId) return res.status(403).send({ status: false, message: "unauthorized author" })
+        }
+        if (!authorId && !category && !subcategory && !tag) return res.status(200).send({ status: true, message: "all blogs", data: data })
         else {
             let filterBlogs = data.filter(blogs => {
                 if (blogs.authorId == authorId) {
@@ -69,23 +74,33 @@ const getBlogs = async (req, res) => {
 
 
 const update = async function (req, res) {
-    let data = req.body
+
     try {
-        if (!ObjectId.isValid(req.params.blogId)) return res.status(404).send("BlogId not valid")
-        else if (!req.params.blogId) return res.status(404).send({ message: "Blog Id is not provide" })
-        else if (!req.body) return res.status(400).send({ message: `didn't provide any data for update` })
+        let data = req.body
+
+        if (!req.params.blogId) return res.status(404).send({ message: "Blog Id is not provide" })
         else {
-            let blog = await blogsModel.findOne({ _id: req.params.blogId, isDeleted: false })
-            const tags = blog.tags
-            tags.push(req.body.tags)
-            data.tags = tags
-            const subcategory = blog.subcategory
-            subcategory.push(req.body.subcategory)
-            data.subcategory = subcategory
-            if (!blog) { return res.status(400).send("BlogId is not match") }
+            let blogauthor = await blogsModel.findOne({ _id: req.params.blogId, authorId: req.authorId })
+
+            if (!blogauthor) {
+                return res.status(403).send({ status: false, message: "UnAuthorized Blog" })
+            }
+            else if (!ObjectId.isValid(req.params.blogId)) return res.status(404).send("BlogId not valid")
+
+            else if (!req.body) return res.status(400).send({ message: `didn't provide any data for update` })
             else {
-                let updateBlog = await blogsModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false }, data, { new: true })
-                res.status(200).send({ status: true, msg: "update successfully", data: updateBlog })
+                let blog = await blogsModel.findOne({ _id: req.params.blogId, isDeleted: false, authorId: req.authorId })
+                const tags = blog.tags
+                tags.push(req.body.tags)
+                data.tags = tags
+                const subcategory = blog.subcategory
+                subcategory.push(req.body.subcategory)
+                data.subcategory = subcategory
+                if (!blog) { return res.status(400).send("BlogId is not match") }
+                else {
+                    let updateBlog = await blogsModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false }, data, { new: true })
+                    res.status(200).send({ status: true, msg: "update successfully", data: updateBlog })
+                }
             }
         }
     }
@@ -97,17 +112,21 @@ const update = async function (req, res) {
 
 const blogDelete = async (req, res) => {
     try {
-        const blogId = req.params.blogId;
-        const findBlog = await blogsModel.findById(blogId)
-        if (!blogId) return res.status(404).send({ message: "Blog id not provided" });
-        else if (!ObjectId.isValid(blogId)) return res.status(400).send({ message: "Blog id is not valid" })
-        else if (!findBlog) return res.status(404).send({ status: false, message: "Blog not found" })
-        const blog = await blogsModel.findByIdAndUpdate(
-            blogId,
-            { $set: { deletedAt: Date.now(), isDeleted: true } },
-            { new: true }
-        );
-        res.status(200).send({ status: true, message: "" });
+
+        if (!req.params.blogId) return res.status(404).send({ message: "Blog Id is not provide" })
+        else {
+            const blogId = req.params.blogId;
+            const findBlog = await blogsModel.findById(blogId)
+            if (!blogId) return res.status(404).send({ message: "Blog id not provided" });
+            else if (!ObjectId.isValid(blogId)) return res.status(400).send({ message: "Blog id is not valid" })
+            else if (!findBlog) return res.status(404).send({ status: false, message: "Blog not found" })
+            const blog = await blogsModel.findByIdAndUpdate(
+                blogId,
+                { $set: { deletedAt: Date.now(), isDeleted: true } },
+                { new: true }
+            );
+            res.status(200).send({ status: true, message: "" });
+        }
     } catch (err) {
         return res.status(500).send({ error: err.message });
     }
@@ -119,6 +138,7 @@ const blogDelete = async (req, res) => {
 
 const deleteBlog = async (req, res) => {
     try {
+
         let data = req.query
         let { category, authorId, tags, subcategory, isPublished } = data
         if (!data) return res.status(400).send({ message: "mandatory field is required" })

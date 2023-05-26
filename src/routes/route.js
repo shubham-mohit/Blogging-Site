@@ -5,11 +5,11 @@ const { blogs, getBlogs, update, blogDelete, deleteBlog } = require('../Controll
 const authorization = require('../Middleware/authAuthorize')
 
 router.post('/authors', authors)
-router.post('/blogs', blogs)
-router.put("/update/:blogId", update)
-router.get('/blogs', getBlogs)
-router.delete('/blogs/:blogId', blogDelete)
-router.delete('/blogs', deleteBlog)
+router.post('/blogs',authorization, blogs)
+router.put("/update/:blogId",authorization, update)
+router.get('/blogs',authorization, getBlogs)
+router.delete('/blogs/:blogId',authorization, blogDelete)
+router.delete('/blogs',authorization, deleteBlog)
 router.post("/login", login)
 
 

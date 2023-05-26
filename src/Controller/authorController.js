@@ -24,8 +24,10 @@ const authors = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body
-        if (!email) return res.status(400).send({ status: false, message: "Please provide a  email" })
+        if(!email && !password) return res.status(400).send({ status: false, message:"please enter your email and password" })
+       else if (!email) return res.status(400).send({ status: false, message: "Please provide a  email" })
         else if (!password) return res.status(400).send({ status: false, message: "Please provide a password" })
+        
         else {
             const userAuthor = await authorModel.findOne({ email: email, password: password })
             if (!userAuthor) return res.status(404).send({ status: false, message: "User not found" })
