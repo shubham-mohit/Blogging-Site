@@ -82,7 +82,7 @@ const update = async function (req, res) {
             data.subcategory = subcategory
             if (!blog) { return res.status(400).send("BlogId is not match") }
             else {
-                let updateBlog = await blogsModel.findByIdAndUpdate(req.params.blogId, data, { new: true })
+                let updateBlog = await blogsModel.findOneAndUpdate({_id:req.params.blogId , isDeleted : false}, data, { new: true })
                 res.status(200).send({ status: true, msg: "update successfully", data: updateBlog })
             }
         }
