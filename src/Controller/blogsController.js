@@ -73,7 +73,7 @@ const update = async function (req, res) {
         else if (!req.params.blogId) return res.status(404).send({ message: "Blog Id is not provide" })
         else if (!req.body) return res.status(400).send({ message: `didn't provide any data for update` })
         else {
-            let blog = await blogsModel.findById(req.params.blogId)
+            let blog = await blogsModel.findOne({_id: req.params.blogId , isDeleted:false})
             const tags = blog.tags
             tags.push(req.body.tags)
             data.tags = tags
