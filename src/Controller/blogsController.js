@@ -139,61 +139,79 @@ const blogDeleteId = async (req, res) => {
 
 const deleteBlogQuery = async (req, res) => {
     try {
-        const { category, authorId, tags, subcategory, isPublished } = req.query
-        if (!category && !authorId && !tags && !subcategory && !isPublished) return res.status(400).send({ message: "atLeast one query mandatory field is required" })
-        else {
-            const tokenAuthorId = req.authorId
+        // const { category, authorId, tags, subcategory, isPublished } = req.query
+        // if (!category && !authorId && !tags && !subcategory && !isPublished) return res.status(400).send({ message: "atLeast one query mandatory field is required" })
+        // else {
+        //     const tokenAuthorId = req.authorId
 
-            if (authorId) {
-                if (authorId != tokenAuthorId) return res.status(403).send({ status: false, message: " Unauthorized author " })
-            } else {
+        //     if (authorId) {
+        //         if (authorId != tokenAuthorId) return res.status(403).send({ status: false, message: " Unauthorized author " })
+        //     } else {
 
-                const blog = await blogsModel.find({authorId:tokenAuthorId, isDeleted: false, ...req.query })
-                //for finding authorid from blog array
-                // console.log(((blog.find(x=>x)).authorId).toString());
-                const blogAuthorId = ((blog.find(x => x)).authorId).toString()
-                if (blog.length == 0) return res.status(400).send({ status: false, message: " blog not found" })
-                else if (blogAuthorId != tokenAuthorId) {
-                    return res.status(403).send({ status: false, message: " Unauthorized author for delete " })
-                }
-                else {
-                    const blogData = await blogsModel.updateMany({ isDeleted: false, ...req.query }, { $set: { deletedAt: Date.now(), isDeleted: true } })
-                    res.status(200).send({ status: true, message: `${blogData.modifiedCount} Deleted successfully` })
+        //         const blog = await blogsModel.find({authorId:tokenAuthorId, isDeleted: false, ...req.query })
+        //         //for finding authorid from blog array
+        //         // console.log(((blog.find(x=>x)).authorId).toString());
+        //         const blogAuthorId = ((blog.find(x => x)).authorId).toString()
+        //         if (blog.length == 0) return res.status(400).send({ status: false, message: " blog not found" })
+        //         else if (blogAuthorId != tokenAuthorId) {
+        //             return res.status(403).send({ status: false, message: " Unauthorized author for delete " })
+        //         }
+        //         else {
+        //             const blogData = await blogsModel.updateMany({ isDeleted: false, ...req.query }, { $set: { deletedAt: Date.now(), isDeleted: true } })
+        //             res.status(200).send({ status: true, message: `${blogData.modifiedCount} Deleted successfully` })
 
-                } 
-            }
+        //         } 
+        //     }
 
-            // const blogDoc = await blogsModel.find({ $or: [{ category: category }, { authorId: authorId }, { subcategory: subcategory }, { isPublished: isPublished }] })
-            // if (blogDoc.length == 0) {
-            //     return res.status(404).send({ error: "Blog document not found" })
-            // }
-            // // let deleteBlog = await blogsModel.updateMany({ $or: [{ category: category }, { authorId: authorId },{ isPublished: isPublished }] }, { $set: { isDeleted: true } })
-            // const deleteBlog = {}
-            // if (category) {
-            //     deleteBlog.category = category
-            // }
-            // if (authorId) {
-            //     deleteBlog.authorId = authorId
-            // }
-            // if (isPublished) {
-            //     deleteBlog.isPublished = isPublished
-            // }
-            // if (subcategory) {
-            //     deleteBlog.subcategory = subcategory
-            // }
-            // if (tags) {
-            //     deleteBlog.tags = tags
-            // }
-            // const blogDelete = await blogsModel.updateMany(deleteBlog, { $set: { isDeleted: true } });
-            // // console.log(blogDelete);
-            // res.status(200).send({ status: true, msg: "deleted successfully" })
-
+        // const blogDoc = await blogsModel.find({ $or: [{ category: category }, { authorId: authorId }, { subcategory: subcategory }, { isPublished: isPublished }] })
+        // if (blogDoc.length == 0) {
+        //     return res.status(404).send({ error: "Blog document not found" })
+        // }
+        // // let deleteBlog = await blogsModel.updateMany({ $or: [{ category: category }, { authorId: authorId },{ isPublished: isPublished }] }, { $set: { isDeleted: true } })
+        // const deleteBlog = {}
+        // if (category) {
+        //     deleteBlog.category = category
+        // }
+        // if (authorId) {
+        //     deleteBlog.authorId = authorId
+        // }
+        // if (isPublished) {
+        //     deleteBlog.isPublished = isPublished
+        // }
+        // if (subcategory) {
+        //     deleteBlog.subcategory = subcategory
+        // }
+        // if (tags) {
+        //     deleteBlog.tags = tags
+        // }
+        // const blogDelete = await blogsModel.updateMany(deleteBlog, { $set: { isDeleted: true } });
+        // // console.log(blogDelete);
+        // res.status(200).send({ status: true, msg: "deleted successfully" })
+        const data = req.query
+        const {tags, authorId, subcategory, isPublished, category} = req.query
+        if(!tags && !authorId && !subcategory && !isPublished && !category) return res.status(400).send({ status: false, msg: "atLeast one of the required fields"});
+        if(authorId){
+            if(authorId != req.authorId) return res.status(400).send({ status: false, msg: "Provide authorId is not authorized" });
         }
-    } catch (error) {
-        return res.status(500).send({ error: error.message });
+        const blog = await blogsModel.find({authorId: req.authorId, ...data, isDeleted: false})
+        if(blog.length === 0) return res.status(404).send({ status: false, msg:"blog not found" });
+        const deletedBlog = await blogsModel.updateMany({authorId: req.authorId, ...data, isDeleted: false}, { $set: { isDeleted: false }}, {new:true})
+        res.status(200).send({ status: true, msg : `${deletedBlog.modifiedCount} deleted successfully`});
+    }
+    catch (error) {
+        return res.status(500).send({ error: error.message })
     }
 
 
 }
+
+// const myMethod = async (req, res) => {
+//     try {
+//         const data = await blogsModel.find({ authorId: req.authorId, isDeleted: false, tags: "JS" });
+//         res.send(data)
+//     } catch (error) {
+//         res.status(500).send({ error: error.message });
+//     }
+// }
 
 module.exports = { blogs, getBlogs, update, blogDeleteId, deleteBlogQuery }
