@@ -1,5 +1,6 @@
 const authorModel = require('../Models/authorModel')
 const validator = require('validator');
+const jwt = require('jsonwebtoken')
 
 const authors = async (req, res) => {
     try {
@@ -19,8 +20,22 @@ const authors = async (req, res) => {
         res.status(500).send({ status: false, message: err.message })
     }
 }
-
-
+const login = async (req,res)=>{
+    try{  
+    const {email,password}=req.body
+    if(!email) return res.status(400).send({ status: false, message: "Please provide a  email"})
+    else if(!password) return res.status(400).send({ status: false, message: "Please provide a password"})
+    else{
+        const userAuthor = await authorModel.findOne({ email: email, password: password})
+        if(!userAuthor) return res.status(404).send({ status: false , message: "User not found"})
+        else{
+            const Token = jwt.sign({userId: userAuthor._id},"Group-8-BLOG-SECRATE")
+        res.status(200).send({ status: true, data: Token})
+        }
+        }
+    }
+    catch(err) {res.status(500).send({ status: false, message:err.message})}
+    }
 // console.log(validator.isEmail("6375@gmail.com"))
 // console.log(validator.isStrongPassword("Ketan@6060"))
-module.exports = { authors }
+module.exports = { authors , login}
