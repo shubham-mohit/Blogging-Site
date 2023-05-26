@@ -8,7 +8,7 @@ const blogs = async (req, res) => {
         else if (!ObjectId.isValid(authorId)) return res.status(400).send({ message: "author id is not valid" })
         else {
             let author = await authorModel.findById(authorId)
-            if (!author) return res.status(400).send({message : "author invalid/ author not found"})
+            if (!author) return res.status(400).send({ message: "author invalid/ author not found" })
             else {
                 let blog = await blogsModel.create(req.body)
                 res.status(201).send({ status: true, data: blog })
@@ -33,26 +33,28 @@ const getBlogs = async (req, res) => {
     try {
         const { authorId, category, tag, subcategory } = req.query
         const data = await blogsModel.find({ isDeleted: false })
-        let filterBlogs = data.filter(blogs => {
-            if (blogs.authorId == authorId) {
-                return blogs
-            }
-            if (blogs.category == category) {
-                return blogs
-            }
-            if ((blogs.tags).includes(tag)) {
-                return blogs
-            }
-            if ((blogs.subcategory).includes(subcategory)) {
-                return blogs
-            }
-        })
-
-        if (filterBlogs.length > 0) {
-            res.status(200).send({ status: true, message: "Blogs List", data: filterBlogs })
-        }
+        if (!authorId && !category && !subcategory && !tag) return res.status(200).send({ status: true,message : "all blogs" ,data: data })
         else {
-            res.status(404).send({ status: false, message: "No Blog Found" })
+            let filterBlogs = data.filter(blogs => {
+                if (blogs.authorId == authorId) {
+                    return blogs
+                }
+                if (blogs.category == category) {
+                    return blogs
+                }
+                if ((blogs.tags).includes(tag)) {
+                    return blogs
+                }
+                if ((blogs.subcategory).includes(subcategory)) {
+                    return blogs
+                }
+            })
+            if (filterBlogs.length > 0) {
+                res.status(200).send({ status: true, message: "Blogs List", data: filterBlogs })
+            }
+            else {
+                res.status(200).send({ status: true, message: "No Blog Found" })
+            }
         }
 
     } catch (error) {
@@ -73,7 +75,7 @@ const update = async function (req, res) {
         else if (!req.params.blogId) return res.status(404).send({ message: "Blog Id is not provide" })
         else if (!req.body) return res.status(400).send({ message: `didn't provide any data for update` })
         else {
-            let blog = await blogsModel.findOne({_id: req.params.blogId , isDeleted:false})
+            let blog = await blogsModel.findOne({ _id: req.params.blogId, isDeleted: false })
             const tags = blog.tags
             tags.push(req.body.tags)
             data.tags = tags
@@ -82,13 +84,13 @@ const update = async function (req, res) {
             data.subcategory = subcategory
             if (!blog) { return res.status(400).send("BlogId is not match") }
             else {
-                let updateBlog = await blogsModel.findOneAndUpdate({_id:req.params.blogId , isDeleted : false}, data, { new: true })
+                let updateBlog = await blogsModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false }, data, { new: true })
                 res.status(200).send({ status: true, msg: "update successfully", data: updateBlog })
             }
         }
     }
     catch (error) {
-        res.status(500).send({status : false, error:error.message})
+        res.status(500).send({ status: false, error: error.message })
     }
 }
 
