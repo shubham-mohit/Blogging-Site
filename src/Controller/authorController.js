@@ -6,7 +6,11 @@ const { SECRETE_KEY } = require('../../config');
 const authors = async (req, res) => {
     try {
         const { fname, lname, email, password, title } = req.body
-        if (!fname || !lname || !email || !password || !title) return res.status(400).send({ status: false, message: "Please provide all required fields" })
+        if (!fname ) return res.status(400).send({ status: false, message: "Please provide FirstName, It's mandatory." })
+        if (!lname ) return res.status(400).send({ status: false, message: "Please provide LastName, It's mandatory"  })
+        if (!email ) return res.status(400).send({ status: false, message: "Please provide Email address ,It's mandatory." })
+        if (!title ) return res.status(400).send({ status: false, message: "Please provide title, It's mandatory." })
+        if (!password ) return res.status(400).send({ status: false, message: "Please provide password, It's mandatory" })
         else if (!["Mr", "Miss", "Mrs"].includes(title)) return res.status(400).send({ status: false, message: "Please provide valid title" })
         else if (!validator.isStrongPassword(password)) return res.status(400).send({ status: false, message: "please enter a strong password" })
         else {
