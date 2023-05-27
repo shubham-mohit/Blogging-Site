@@ -26,7 +26,7 @@ const login = async (req, res) => {
         const { email, password } = req.body
         if (!email && !password) return res.status(400).send({ status: false, message: "please enter your email and password" })
         else if (!email) return res.status(400).send({ status: false, message: "Please provide a  email" })
-        else if (validator.isEmail(email)) return res.status(400).send({ status: false, message: "this email is valid" });
+        else if (!validator.isEmail(email)) return res.status(400).send({ status: false, message: "this email is Invalid" });
         else if (!password) return res.status(400).send({ status: false, message: "Please provide a password" })
 
         else {
