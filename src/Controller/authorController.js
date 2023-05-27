@@ -24,17 +24,17 @@ const authors = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body
-        if(!email && !password) return res.status(400).send({ status: false, message:"please enter your email and password" })
-       else if (!email) return res.status(400).send({ status: false, message: "Please provide a  email" })
-       else if(validator.isEmail(email)) return res.status(400).send({ status:false, message:"this email is valid"});
+        if (!email && !password) return res.status(400).send({ status: false, message: "please enter your email and password" })
+        else if (!email) return res.status(400).send({ status: false, message: "Please provide a  email" })
+        else if (validator.isEmail(email)) return res.status(400).send({ status: false, message: "this email is valid" });
         else if (!password) return res.status(400).send({ status: false, message: "Please provide a password" })
-        
+
         else {
             const userAuthor = await authorModel.findOne({ email: email, password: password })
             if (!userAuthor) return res.status(404).send({ status: false, message: "User not found" })
             else {
                 const Token = jwt.sign({ userId: userAuthor._id }, SECRETE_KEY)
-                if(!Token) return res.status(401).send({ status: false, message: "Token not generated" })
+                if (!Token) return res.status(401).send({ status: false, message: "Token not generated" })
                 res.status(200).send({ status: true, data: Token })
             }
         }
