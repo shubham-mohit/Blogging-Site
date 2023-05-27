@@ -3,7 +3,7 @@ const { SECRETE_KEY } = require("../../config");
 
 const authorization = (req, res, next) => {
   try {
-    if(!req.headers) return res.status(400).send({status:false, message:"Please provide headers."});
+    if(!req.headers[`x-api-key`]) return res.status(400).send({status:false, message:"Please provide headers."});
     else {
         const token = req.headers[`x-api-key`]
         if(!token) return res.status(400).send({status:false, message:"Please provide token."});
@@ -17,7 +17,7 @@ const authorization = (req, res, next) => {
     }
   } }
   catch (err) {
-    res.status(403).send({status:false,message:err.message});
+    res.status(401).send({status:false,message:err.message});
   }
 };
 

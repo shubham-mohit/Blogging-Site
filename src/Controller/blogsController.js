@@ -8,10 +8,11 @@ const blogs = async (req, res) => {
         if (!title || !body || !authorId || !category) { return res.status(400).send({ message: "provide mandatory fields" }) }
         else if (!ObjectId.isValid(authorId)) return res.status(400).send({ message: "author id is not valid" })
         else {
-            let author = await authorModel.findById(authorId)
+            if (authorId != req.authorId) return res.status(400).send({ status: false, message: "Provide author id is not valid for creating a blog" })
+            const author = await authorModel.findById(authorId)
             if (!author) return res.status(400).send({ message: "author invalid/ author not found" })
             else {
-                let blog = await blogsModel.create(req.body)
+                const blog = await blogsModel.create(req.body)
                 res.status(201).send({ status: true, data: blog })
             }
         }
