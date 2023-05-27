@@ -34,7 +34,7 @@ const getBlogs = async (req, res) => {
     try {
         const { authorId, category, tag, subcategory } = req.query
         const data = await blogsModel.find({ isDeleted: false, authorId: req.authorId })
-        console.log(data);
+        // console.log(data);
         if (authorId) {
 
             if (req.authorId != authorId) return res.status(403).send({ status: false, message: "unauthorized author" })
@@ -188,15 +188,15 @@ const deleteBlogQuery = async (req, res) => {
         // // console.log(blogDelete);
         // res.status(200).send({ status: true, msg: "deleted successfully" })
         const data = req.query
-        const {tags, authorId, subcategory, isPublished, category} = req.query
-        if(!tags && !authorId && !subcategory && !isPublished && !category) return res.status(400).send({ status: false, msg: "atLeast one of the required fields"});
-        if(authorId){
-            if(authorId != req.authorId) return res.status(400).send({ status: false, msg: "Provide authorId is not authorized" });
+        const { tags, authorId, subcategory, isPublished, category } = data
+        if (!tags && !authorId && !subcategory && !isPublished && !category) return res.status(400).send({ status: false, msg: "atLeast one of the required fields" });
+        if (authorId) {
+            if (authorId != req.authorId) return res.status(400).send({ status: false, msg: "Provide authorId is not authorized" });
         }
-        const blog = await blogsModel.find({authorId: req.authorId, ...data, isDeleted: false})
-        if(blog.length === 0) return res.status(404).send({ status: false, msg:"blog not found" });
-        const deletedBlog = await blogsModel.updateMany({authorId: req.authorId, ...data, isDeleted: false}, { $set: { isDeleted: false }}, {new:true})
-        res.status(200).send({ status: true, msg : `${deletedBlog.modifiedCount} deleted successfully`});
+        const blog = await blogsModel.find({ authorId: req.authorId, ...data, isDeleted: false })
+        if (blog.length === 0) return res.status(404).send({ status: false, msg: "blog not found" });
+        const deletedBlog = await blogsModel.updateMany({ authorId: req.authorId, ...data, isDeleted: false }, { $set: { isDeleted: true } }, { new: true })
+        res.status(200).send({ status: true, msg: `${deletedBlog.modifiedCount} deleted successfully` });
     }
     catch (error) {
         return res.status(500).send({ error: error.message })
