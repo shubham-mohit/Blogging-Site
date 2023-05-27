@@ -21,16 +21,6 @@ const blogs = async (req, res) => {
         res.status(500).send({ status: false, message: error.message })
     }
 }
-
-/* - Returns all blogs in the collection that aren't deleted and are published
-- Return the HTTP status 200 if any documents are found. The response structure should be like [this](#Get-Blogs-Response-Structure) 
-- If no documents are found then return an HTTP status 404 with a response like [this](#error-response-structure) 
-- Filter blogs list by applying filters. Query param can have any combination of below filters.
-- By author Id
-- By category
-- List of blogs that have a specific tag
-- List of blogs that have a specific subcategory
-example of a query url: blogs?filtername=filtervalue&f2=fv2*/
 const getBlogs = async (req, res) => {
     try {
         const { authorId, category, tag, subcategory } = req.query
@@ -42,7 +32,6 @@ const getBlogs = async (req, res) => {
         }
         if (!authorId && !category && !subcategory && !tag) return res.status(200).send({ status: true, message: "all blogs", data: data })
         else {
-
             let filterBlogs = data.filter(blogs => {
                 if (blogs.authorId == authorId) {
                     return blogs
@@ -64,23 +53,15 @@ const getBlogs = async (req, res) => {
                 res.status(200).send({ status: true, message: "No Blog Found" })
             }
         }
-
     } catch (error) {
         res.status(500).send({ status: false, message: error.message })
     }
 }
 
-
-
-
-
-
-
 const update = async function (req, res) {
 
     try {
         let data = req.body
-
         if (!req.params.blogId) return res.status(404).send({ message: "Blog Id is not provide" })
         else {
             const blogAuthor = await blogsModel.findOne({ _id: req.params.blogId, authorId: req.authorId })
@@ -134,10 +115,6 @@ const blogDeleteId = async (req, res) => {
     }
 };
 
-
-
-
-
 const deleteBlogQuery = async (req, res) => {
     try {
         const data = req.query
@@ -154,8 +131,6 @@ const deleteBlogQuery = async (req, res) => {
     catch (error) {
         return res.status(500).send({ error: error.message })
     }
-
-
 }
 
 // const myMethod = async (req, res) => {
