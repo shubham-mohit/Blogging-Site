@@ -6,7 +6,7 @@ const authorization = require('../Middleware/authAuthorize')
 
 router.post('/authors', authors)
 router.post('/blogs',authorization, blogs)
-router.put("/update/:blogId",authorization, update)
+router.put("/blogs/:blogId",authorization, update)
 router.get('/blogs',authorization, getBlogs)
 router.delete('/blogs/:blogId',authorization, blogDeleteId)
 router.delete('/blogs',authorization, deleteBlogQuery)
