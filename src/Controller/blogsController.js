@@ -50,7 +50,7 @@ const getBlogs = async (req, res) => {
                 res.status(200).send({ status: true, message: "Blogs List", data: filterBlogs })
             }
             else {
-                res.status(200).send({ status: true, message: "No Blog Found" })
+                res.status(400).send({ status: false, message: "No Blog Found" })
             }
         }
     } catch (error) {
