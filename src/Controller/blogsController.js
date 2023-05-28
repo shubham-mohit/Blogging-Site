@@ -4,17 +4,17 @@ const ObjectId = require('mongoose').Types.ObjectId;
 
 const blogs = async (req, res) => {
     const { title, body, authorId, category } = req.body
+    //not required author Id it catch from the token
     try {
         if(! req.body) return res.status(404).send({status : false, message : 'Provide  all the required information'})
         if (!title )  return res.status(400).send({ message: "Please provide title, It's mandatory" }) 
         if (!body )  return res.status(400).send({ message: "Please provide body, It's mandatory " }) 
-        if (!authorId )  return res.status(400).send({ message: "Please provide authorId, It's mandatory" }) 
+        // if (!authorId )  return res.status(400).send({ message: "Please provide authorId, It's mandatory" }) 
         if (!category )  return res.status(400).send({ message: "Please provide category, It's mandatory" }) 
-
-
         else if (!ObjectId.isValid(authorId)) return res.status(400).send({ message: "author id is not valid" })
         else {
-            if (authorId != req.authorId) return res.status(400).send({ status: false, message: "Provided author id is not valid for creating a blog" })
+            // if (authorId != req.authorId) return res.status(400).send({ status: false, message: "Provided author id is not valid for creating a blog" })
+            req.body.authorId = req.authorId
             const author = await authorModel.findById(authorId)
             if (!author) return res.status(400).send({ message: "author invalid/ author not found" })
             else {
