@@ -5,10 +5,11 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const blogs = async (req, res) => {
     const { title, body, authorId, category } = req.body
     try {
+        if(! req.body) return res.status(404).send({status : false, message : 'Provide  all the required information'})
         if (!title )  return res.status(400).send({ message: "Please provide title, It's mandatory" }) 
         if (!body )  return res.status(400).send({ message: "Please provide body, It's mandatory " }) 
         if (!authorId )  return res.status(400).send({ message: "Please provide authorId, It's mandatory" }) 
-        if (!category )  return res.status(400).send({ message: "Pleade provide category, It's mandatory" }) 
+        if (!category )  return res.status(400).send({ message: "Please provide category, It's mandatory" }) 
 
 
         else if (!ObjectId.isValid(authorId)) return res.status(400).send({ message: "author id is not valid" })

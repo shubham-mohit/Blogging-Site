@@ -6,6 +6,7 @@ const { SECRETE_KEY } = require('../../config');
 const authors = async (req, res) => {
     try {
         const { fname, lname, email, password, title } = req.body
+        if(!req.body) return res.status(400).send({status: false, message: 'Missing required fields'});
         if (!fname ) return res.status(400).send({ status: false, message: "Please provide FirstName, It's mandatory." })
         if (!lname ) return res.status(400).send({ status: false, message: "Please provide LastName, It's mandatory"  })
         if (!email ) return res.status(400).send({ status: false, message: "Please provide Email address ,It's mandatory." })
