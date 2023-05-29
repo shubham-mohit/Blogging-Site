@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { SECRETE_KEY } = require("../../config");
+const SECRETE_KEY = "GROUP_8-KETAN_BLOGGING"
 
 const authorization = (req, res, next) => {
   try {

@@ -1,7 +1,8 @@
 const authorModel = require('../Models/authorModel')
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
-const { SECRETE_KEY } = require('../../config');
+// const { SECRETE_KEY } = require('../../config');
+const SECRETE_KEY = "GROUP_8-KETAN_BLOGGING"
 
 const authors = async (req, res) => {
     try {
