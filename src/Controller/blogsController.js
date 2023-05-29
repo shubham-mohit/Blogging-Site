@@ -30,7 +30,7 @@ const blogs = async (req, res) => {
 const getBlogs = async (req, res) => {
     try {
         const { authorId, category, tag, subcategory } = req.query
-        const data = await blogsModel.find({ isDeleted: false, authorId: req.authorId })
+        const data = await blogsModel.find({ isDeleted: false, authorId: req.authorId , isPublished:true})
         if (authorId) {
             if (req.authorId != authorId) return res.status(401).send({ status: false, message: "unauthorized author" })
         }
