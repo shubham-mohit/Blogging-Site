@@ -103,7 +103,7 @@ const blogDeleteId = async (req, res) => {
         if (!req.params.blogId) return res.status(404).send({ message: "Blog Id is not provide" })
         else {
             const blogId = req.params.blogId;
-            const findBlog = await blogsModel.findById(blogId)
+            const findBlog = await blogsModel.findOne({_id: blogId, isDeleted : false})
             if (findBlog.authorId != req.authorId) return res.status(403).send({ status: false, message: "User is not authorized to delete blog" })
             else if (!ObjectId.isValid(blogId)) return res.status(400).send({ message: "Blog id is not valid" })
             else if (!findBlog) return res.status(404).send({ status: false, message: "Blog not found" })
@@ -127,6 +127,7 @@ const deleteBlogQuery = async (req, res) => {
         const { tags, authorId, subcategory, isPublished, category } = data
         if (!tags && !authorId && !subcategory && !isPublished && !category) return res.status(400).send({ status: false, msg: "atLeast one of the required fields" });
         if (authorId) {
+            // if(ObjectId.isValid(authorId)
             if (authorId != req.authorId) return res.status(400).send({ status: false, msg: "Provide authorId is not authorized for delete blog" });
         }
         const blog = await blogsModel.find({ authorId: req.authorId, ...data, isDeleted: false })
