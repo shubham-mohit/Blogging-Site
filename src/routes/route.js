@@ -1,9 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const { authors, login } = require('../Controller/authorController')
+const { authors, login,getAuthor } = require('../Controller/authorController')
 const { blogs, getBlogs, update, blogDeleteId, deleteBlogQuery } = require('../Controller/blogsController')
 const authorization = require('../Middleware/authAuthorize')
 
+router.get('/authors/:Id', getAuthor)
 router.post('/authors', authors)
 router.post('/blogs', authorization, blogs)
 router.put("/blogs/:blogId", authorization, update)

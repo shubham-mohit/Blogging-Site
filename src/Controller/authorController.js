@@ -27,6 +27,17 @@ const authors = async (req, res) => {
         res.status(500).send({ status: false, message: err.message })
     }
 }
+
+const getAuthor = async (req, res) => {
+    try {
+        const id = req.params.Id
+        const author = await authorModel.findById( id)
+        if(!author) return res.status(400).send({ status: false, message: "Not found" })
+        return res.status(200).send({status: true, author:author})
+    } catch (error) {
+        res.status(500).send({ status: false, message: err.message })
+    }
+}
 const login = async (req, res) => {
     try {
         const { email, password } = req.body
@@ -49,4 +60,4 @@ const login = async (req, res) => {
 }
 // console.log(validator.isEmail("6375@gmail.com"))
 // console.log(validator.isStrongPassword("Ketan@6060"))
-module.exports = { authors, login }
+module.exports = { authors, login, getAuthor }
