@@ -14,7 +14,7 @@ const blogs = async (req, res) => {
         // else if (!ObjectId.isValid(authorId)) return res.status(400).send({ message: "author id is not valid" })
         else {
             // if (authorId != req.authorId) return res.status(400).send({ status: false, message: "Provided author id is not valid for creating a blog" })
-            authorId = req.authorId
+            req.body.authorId = req.authorId
             const author = await authorModel.findById(req.authorId)
             if (!author) return res.status(400).send({ status: false, message: "author invalid/ author not found" })
             else {
